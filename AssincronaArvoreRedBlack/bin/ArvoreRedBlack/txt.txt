@@ -1,0 +1,198 @@
+package ArvoreRedBlack;
+
+public class ARB<T extends Comparable<T>> {
+    private ARBNode<T> root;
+    private final ARBNode<T> nil; // Nó especial nil
+
+    // Inicializa a árvore com o nó nil
+    public ARB() {
+        nil = new ARBNode<>(); // Cria o nó 'nil'
+        root = nil;
+    }
+
+    public boolean isEmpty() {
+        return root == nil;
+    }
+
+    // Método de inserção principal
+    public void inserir(T valor) {
+        ARBNode<T> novoNo = new ARBNode<>(valor);
+
+        // Verifica se a árvore está vazia
+        if (root == nil) {
+            // A árvore está vazia, ajusta a raiz diretamente
+            root = novoNo;
+            root.setPrevious(nil); // Pai do root é nil
+            root.setLeft(nil); // Filho esquerdo é nil
+            root.setRight(nil); // Filho direito é nil
+            root.setColor(0); // Root deve ser preto
+            return; // Não é necessário balanceamento adicional
+        }
+
+        // Início da inserção normal
+        ARBNode<T> pai = nil; // Anteriormente 'y'
+        ARBNode<T> filho = root; // Anteriormente 'x'
+
+        while (filho != nil) {
+            pai = filho;
+            if (novoNo.getInfo().compareTo(filho.getInfo()) < 0) {
+                filho = filho.getLeft();
+            } else {
+                filho = filho.getRight();
+            }
+        }
+
+        novoNo.setPrevious(pai); // Ajusta o pai do novo nó
+
+        if (pai == nil) {
+            root = novoNo; // Caso base: árvore estava vazia
+        } else if (novoNo.getInfo().compareTo(pai.getInfo()) < 0) {
+            pai.setLeft(novoNo);
+        } else {
+            pai.setRight(novoNo);
+        }
+
+        novoNo.setLeft(nil);
+        novoNo.setRight(nil);
+        novoNo.setColor(1); // Novo nó é vermelho
+
+        inserirFixUp(novoNo); // Corrige a árvore após a inserção
+    }
+
+    // Método para corrigir a árvore após a inserção
+    private void inserirFixUp(ARBNode<T> z) {
+        while (z.getPrevious().getColor() == 1) { // Enquanto o pai é vermelho
+            if (z.getPrevious() == z.getPrevious().getPrevious().getLeft()) {
+                ARBNode<T> tio = z.getPrevious().getPrevious().getRight();
+                if (tio.getColor() == 1) { // Caso 1: O tio é vermelho
+                    z.getPrevious().setColor(0);
+                    tio.setColor(0);
+                    z.getPrevious().getPrevious().setColor(1);
+                    z = z.getPrevious().getPrevious();
+                } else {
+                    if (z == z.getPrevious().getRight()) { // Caso 2: O nó é filho direito
+                        z = z.getPrevious();
+                        rotacaoEsquerda(z);
+                    }
+                    z.getPrevious().setColor(0); // Caso 3: O tio é preto e z é filho esquerdo
+                    z.getPrevious().getPrevious().setColor(1);
+                    rotacaoDireita(z.getPrevious().getPrevious());
+                }
+            } else { // Simétrico, considerando z.getPrevious() é filho direito
+                ARBNode<T> tio = z.getPrevious().getPrevious().getLeft();
+                if (tio.getColor() == 1) { // Caso 1: O tio é vermelho
+                    z.getPrevious().setColor(0);
+                    tio.setColor(0);
+                    z.getPrevious().getPrevious().setColor(1);
+                    z = z.getPrevious().getPrevious();
+                } else {
+                    if (z == z.getPrevious().getLeft()) { // Caso 2: O nó é filho esquerdo
+                        z = z.getPrevious();
+                        rotacaoDireita(z);
+                    }
+                    z.getPrevious().setColor(0); // Caso 3: O tio é preto e z é filho direito
+                    z.getPrevious().getPrevious().setColor(1);
+                    rotacaoEsquerda(z.getPrevious().getPrevious());
+                }
+            }
+        }
+        root.setColor(0); // A raiz é sempre preta
+    }
+
+    // Rotação à esquerda
+    private void rotacaoEsquerda(ARBNode<T> pai) {
+        ARBNode<T> filho = pai.getRight(); // Anteriormente 'y' e 'x'
+        pai.setRight(filho.getLeft());
+        if (filho.getLeft() != nil) {
+            filho.getLeft().setPrevious(pai);
+        }
+        filho.setPrevious(pai.getPrevious());
+        if (pai.getPrevious() == nil) {
+            root = filho;
+        } else if (pai == pai.getPrevious().getLeft()) {
+            pai.getPrevious().setLeft(filho);
+        } else {
+            pai.getPrevious().setRight(filho);
+        }
+        filho.setLeft(pai);
+        pai.setPrevious(filho);
+    }
+
+    // Rotação à direita
+    private void rotacaoDireita(ARBNode<T> pai) {
+        ARBNode<T> filho = pai.getLeft(); // Anteriormente 'y' e 'x'
+        pai.setLeft(filho.getRight());
+        if (filho.getRight() != nil) {
+            filho.getRight().setPrevious(pai);
+        }
+        filho.setPrevious(pai.getPrevious());
+        if (pai.getPrevious() == nil) {
+            root = filho;
+        } else if (pai == pai.getPrevious().getRight()) {
+            pai.getPrevious().setRight(filho);
+        } else {
+            pai.getPrevious().setLeft(filho);
+        }
+        filho.setRight(pai);
+        pai.setPrevious(filho);
+    }
+}
+private void porNivel(ARBNode<T> r){
+        Queue<ARBNode<T>> fila = new LinkedList<>();
+        fila.add(r);
+
+        while(!fila.isEmpty()){
+            r = fila.poll();
+            if(r != nil){
+                if(r.getStatus()){
+                    System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-");
+                    System.out.println("Info: "+ r.getInfo());
+                    System.out.print("Cor: ");
+                    if(r.getColor() == 0){
+                        System.out.println("Preto");
+                    }else{
+                        System.out.println("Vermelho");
+                    }
+                    System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-");
+                }
+                if(r.getLeft() != nil){
+                    fila.add(r.getLeft());
+                }else{
+                    fila.add(nil);
+                }   
+                if(r.getRight() != nil){
+                    fila.add(r.getRight());
+                }else{
+                    fila.add(nil);
+                }
+            }else{
+                System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-");
+                System.out.println(" null ");
+                System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-");
+            }
+
+        }
+    }
+
+    private void porNivel(ARBNode<T> r){
+        Queue<ARBNode<T>> fila = new LinkedList<>(); //fila para percorrer árvore por nível
+        fila.add(r);//adiciona a raiz
+
+        while(!fila.isEmpty()){
+            r = fila.poll();
+            if(r != nil){//se r nao for nil, vai printar as informações do nó
+                if(r.getStatus()){//se o nó estiver ativo, suas informações vão ser printadas
+                    if(r.getColor() == 0){//checa a cor do nó e printa
+                        System.out.print("\u001B[30m" + "|" + "["+ r.getInfo()+"]" +"(preto)| "+"\u001B[0m");
+                    }else{
+                        System.out.print("\u001B[31m" + "|" + "["+ r.getInfo()+"]" +"(Vermelho)| "+ "\u001B[0m");
+                    }
+                }
+                fila.add(r.getLeft());
+                fila.add(r.getRight());
+            }else{//se for nil vai printar null
+                System.out.print("\u001B[30m" + "|" +  "[nil]" +"(preto)| " +"\u001B[0m");
+            }
+
+        }
+    }

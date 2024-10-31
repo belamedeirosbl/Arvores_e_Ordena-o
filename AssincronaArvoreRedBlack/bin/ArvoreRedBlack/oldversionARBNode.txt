@@ -1,0 +1,97 @@
+package ArvoreRedBlack;
+public class ARBNode<T extends Comparable<T>> {
+    ARBNode<T> pai;
+    ARBNode<T> left;
+    ARBNode<T> right;
+    T info;
+    int cor; 
+    boolean status;  
+
+    @SuppressWarnings("rawtypes")/*tirar o aviso de erro na declaração de nil,
+    pq esta usando uma classe generica sem especificcar explicitamente o tipo generico*/
+    ////private static final define caracteristica especifica de uma variavelou campo em uma classe
+    //final indica que não pode ser alterado nem pode atribuir a ele novo valor, garantindo que vai ser
+    //constante durante a execução do programa, como deve ser
+    private static final ARBNode NIL = new ARBNode();//nil é tipo bruto(nao parametizada)
+    //por ser estático, nao posso dat o tipo <T> nesse contexto, pq T não esta definido
+    /*cria o nó nil que representa todas as folhas, é um objeto estatico
+    e é compartilhado por todos os nós não terminais. usamos tambem porque
+    não tem como associar diretamnete propriedades a um null*/
+    
+    private ARBNode() {//inicializa o nil, é privado para que seja crido apenas 1
+        this.cor = 0;  
+        this.status = true;  
+    }
+
+    @SuppressWarnings("unchecked")//tira o aviso do this.left e this.right
+    public ARBNode(T info) {
+        this.info = info;
+        this.left = (ARBNode<T>) NIL;  
+        this.right = (ARBNode<T>) NIL;
+        this.cor = 1;  
+        this.status = true;  
+    }
+
+    public int getCor() {
+        return cor;
+    }
+
+    public void setCor(int cor) {
+        this.cor = cor;
+    }
+
+    public T getInfo() {
+        return info;
+    }
+
+    public void setInfo(T info) {
+        this.info = info;
+    }
+
+    public ARBNode<T> getLeft() {
+        return left;
+    }
+
+    public void setLeft(ARBNode<T> left) {
+        this.left = left;
+    }
+
+    public ARBNode<T> getRight() {
+        return right;
+    }
+
+    public void setRight(ARBNode<T> right) {
+        this.right = right;
+    }
+
+    public ARBNode<T> getPai() {
+        return pai;
+    }
+
+    public void setPai(ARBNode<T> pai) {
+        this.pai = pai;
+    }
+
+    public boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+}
+
+
+public void insert(T value){
+        ARBNode<T> newNode = new ARBNode<>(value);
+        if(this.isEmpty()){
+            newNode.setColor(0);//raiz sempre vai ser preta
+            this.root = newNode;
+            System.out.println("Nó inserido!");
+            return;
+        }
+
+        ARBNode<T> aux = root;
+        
+        
+    }
